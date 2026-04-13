@@ -1,57 +1,107 @@
-\documentclass[14pt]{extreport}
-\usepackage{hyperref}
-\usepackage{iftex}
-\usepackage{pdflscape}
-\usepackage{hyphenat}
-\usepackage{changepage}
-\usepackage{titlesec}
-\usepackage{tikz}
-\usepackage{dot2texi}
-\usepackage[left=3cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
-\usepackage{graphicx}
-\usepackage{amssymb}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{empheq}
-\usepackage{mathtext}
-\usepackage{mdframed}
-\usepackage{booktabs}
-\usepackage{lipsum}
-\usepackage{graphicx}
-\usepackage{color}
-\usepackage{psfrag}
-\usepackage{pgfplots}
-\usepackage{bm}
-\usepackage{hyperref}
-\usepackage[pdf]{graphviz}
+\documentclass[a4paper, 14pt]{extreport}
+
+% ========== MATHEMATICS ==========
+\usepackage{amsmath, amssymb}
+
+% ========== MARGINS (GOST R 7.0.97-2025) ==========
+\usepackage[
+    left=30mm, 
+    right=10mm, 
+    top=20mm, 
+    bottom=20mm,
+    headsep=5mm, % Positions page number ~10mm from the top edge
+    footskip=10mm
+]{geometry}
+ \usepackage{graphicx}
+
+
+\renewcommand{\thefigure}{\thechapter--\arabic{figure}} 
+% ========== PARAGRAPHS & SPACING ==========
+\usepackage{indentfirst}
 \usepackage{setspace}
-\onehalfspacing
-\usepackage{wrapfig}
-\geometry{a4paper}
-\usepackage{parskip}
-\titleformat{\chapter}[hang]
-{\normalfont\huge\bfseries} 
-{\thechapter.}              
-{0.5em}                     
-{}                          
-\usepgfplotslibrary{colorbrewer}
-\pgfplotsset{width=8cm,compat=1.9}
-\title{Navigator}
-\author{Chikishev Mikhail, SE-102\\
-Mikhail Sharmanov, SE-103\\
-Andreev Alexey, SE-103\\
-Egor Yemelyanov, SE-103
+\onehalfspacing % 1.5 line spacing
+\setlength{\parindent}{1.25cm} % Standard GOST indent
+
+% ========== HEADINGS ==========
+\usepackage{titlesec}
+\titleformat{\chapter}{\normalsize\bfseries\centering}{\thechapter}{1em}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+\titleformat{\section}{\normalsize\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+% ========== PAGE NUMBERING (GOST Style) ==========
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage} % Centered at the top
+\renewcommand{\headrulewidth}{0pt}
+
+% Apply same style to chapter start pages
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyhead[C]{\thepage}
+    \renewcommand{\headrulewidth}{0pt}
 }
 
+% ========== TABLES & FIGURES ==========
+\usepackage{caption}
+\captionsetup[table]{labelsep=endash, justification=raggedright, singlelinecheck=off}
+\captionsetup[figure]{labelsep=endash, justification=centering}
+
+% ========== BIBLIOGRAPHY ==========
+\usepackage[
+    backend=biber,
+    style=gost-numeric,
+    sorting=none
+]{biblatex}
+\addbibresource{bibliography.bib}
+
+% ========== HELPER PACKETS ==========
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=\parindent}
+\usepackage[unicode, hidelinks]{hyperref}
+
+% ========== DOCUMENT START ==========
 \begin{document}
 
+% ========== TITLE PAGE (GOST R 7.0.97-2025 COMPLIANT) ==========
+\begin{titlepage}
+	\centering
+	{MINISTRY OF SCIENCE AND HIGHER EDUCATION OF THE RUSSIAN FEDERATION \par}
+	{\normalsize Federal State Budgetary Educational Institution of Higher Education \par}
+	{"CHELYABINSK STATE UNIVERSITY" \par}
+	(CSU) \par
+	\vspace{5pt}
+	{\normalsize Institute of Information Technology \par}
 
-\maketitle
-\newpage
+	\vspace{80pt}
+
+	{\large THESIS \par}
+	\vspace{20pt}
+
+	{\Large Development of a University Navigator \par}
+
+	\vspace{60pt}
+
+	\begin{flushright}
+		\begin{minipage}{0.45\textwidth}
+			{\bfseries Authors:} \\
+			Chikishev Mikhail, PR-102\\
+			Mikhail Sharmanov, PR-103\\
+			Andreev Alexey, PR-103\\
+			Egor Yemelyanov, PR-103
+		\end{minipage}
+	\end{flushright}
+
+	\vfill
+
+	{\normalsize Chelyabinsk \par}
+	{\normalsize 2026 \par}
+\end{titlepage}
+
+\setcounter{page}{2} % Title page is counted but not numbered
 
 \tableofcontents
-\newpage
-\sloppy
 \chapter{Introduction}
 \section{Project Rationale}
 The project aims to develop a replacement for the existing navigation service \href{https://map.csu.ru}{map.csu.ru}. The primary driver for development is the need to implement modern 360-degree panoramic imaging technologies to enhance the visualization of the university environment. During the conceptual discussion, it was decided to discontinue support for the current codebase in favor of developing a fundamentally new application. This decision is based on the following factors:
@@ -125,26 +175,26 @@ The designed system architecture is dictated by the specifics of the target infr
 \subsection{Infrastructure Characteristics and Design Principles}
 The choice of a \texttt{docker-compose} based deployment environment limits horizontal scaling capabilities in the short term; however, it ensures high autonomy in system resource management. The core architectural principles include:
 \begin{itemize}
-	\item \textbf{Service Consolidation:} Minimizing the number of containers to reduce virtualization overhead under resource-constrained conditions.
-	\item \textbf{Hybrid Monolith:} The core business logic is implemented within a single service (Backend), which simplifies inter-node communication while maintaining modularity for connecting external components (parsers and bots).
-	\item \textbf{Stateless Approach:} The backend is designed without session state persistence, ensuring the system's potential readiness for migration to a clustered environment (e.g., Kubernetes) for future scaling.
+	\item  {Service Consolidation:} Minimizing the number of containers to reduce virtualization overhead under resource-constrained conditions.
+	\item  {Hybrid Monolith:} The core business logic is implemented within a single service (Backend), which simplifies inter-node communication while maintaining modularity for connecting external components (parsers and bots).
+	\item  {Stateless Approach:} The backend is designed without session state persistence, ensuring the system's potential readiness for migration to a clustered environment (e.g., Kubernetes) for future scaling.
 \end{itemize}
 
 \subsection{Technology Stack Components}
 
-\textbf{1. Networking and Security (NGINX, Anubis)} \\
+{1. Networking and Security (NGINX, Anubis)} \\
 To handle traffic routing and ensure information security, a combination of the NGINX web server and the Anubis protection system will be utilized. This solution is critical for preventing system performance degradation caused by unauthorized traffic spikes (automated attacks) under limited VM resource conditions.
 
-\textbf{2. Storage and Geospatial Analysis Layer (PostgreSQL, PostGIS, pgRouting)} \\
-PostgreSQL has been selected as the primary DBMS. Its \textbf{PostGIS} extension provides efficient storage and processing of spatial data. To implement navigation logic, the \textbf{pgRouting} extension will be integrated, offering tools to execute shortest-path algorithms directly on the database side. This allows for offloading the main service by delegating complex graph computations to the optimized DBMS engine.
+	{2. Storage and Geospatial Analysis Layer (PostgreSQL, PostGIS, pgRouting)} \\
+PostgreSQL has been selected as the primary DBMS. Its  {PostGIS} extension provides efficient storage and processing of spatial data. To implement navigation logic, the  {pgRouting} extension will be integrated, offering tools to execute shortest-path algorithms directly on the database side. This allows for offloading the main service by delegating complex graph computations to the optimized DBMS engine.
 
-\textbf{3. Communication Subsystem (Ejabberd and XMPP Client)} \\
+	{3. Communication Subsystem (Ejabberd and XMPP Client)} \\
 The \texttt{ejabberd} server will be used to facilitate user interaction. A key feature of this integration is the delegation of user authentication to the main backend. The use of the OAuth protocol enables a Single Sign-On (SSO) concept, eliminating the need to duplicate and synchronize credentials across multiple data stores. The selection of a specific XMPP web client is currently under investigation.
 
-\textbf{4. Object Storage and Caching (MinIO, Redis)} \\
+	{4. Object Storage and Caching (MinIO, Redis)} \\
 Static content (map tiles, 3D panoramas) will be stored in the S3-compatible \texttt{MinIO} object storage. \texttt{Redis} will be employed for task queue management and real-time data caching, significantly improving system response times.
 
-\textbf{5. External Integration Services (Parsers and Bots)} \\
+	{5. External Integration Services (Parsers and Bots)} \\
 Data collection modules (schedule parsers) are implemented in Python to ensure flexibility in processing structured information. For chat-bot development, priority is given to the Go language to minimize resource consumption and ensure native compatibility with the core backend architecture; however, Python may be used when specific protocol support is required.
 
 \section{Backend Implementation}
@@ -162,11 +212,11 @@ The backend of the application will be developed in Go using a multi-layered arc
 The application startup is a strictly deterministic sequence of resource and service initialization stages. The deployment algorithm includes the following steps:
 
 \begin{enumerate}
-	\item \textbf{Configuration:} Using the \texttt{Viper} library to load environment parameters from environment variables and configuration files. This allows for flexible adjustment of settings (ports, database addresses, access keys) without rebuilding the binary file.
-	\item \textbf{Database State Management:} Establishing a connection to PostgreSQL and executing automatic migrations using \texttt{golang-migrate}. This guarantees data schema consistency, including the \texttt{PostGIS} and \texttt{pgRouting} extensions.
-	\item \textbf{Caching and Queue Initialization:} Creating clients for \texttt{Redis} and \texttt{Asynq}, which are required for handling background tasks and transient data.
-	\item \textbf{Dependency Injection (DI):} Implementing the IoC (Inversion of Control) pattern. All objects (repositories, services, handlers) receive their dependencies explicitly through constructors. This approach eliminates hidden dependencies within components and facilitates unit testing.
-	\item \textbf{Transport Layer Startup:} Initializing HTTP server routes, the WebSocket hub, and activating background workers.
+	\item  {Configuration:} Using the \texttt{Viper} library to load environment parameters from environment variables and configuration files. This allows for flexible adjustment of settings (ports, database addresses, access keys) without rebuilding the binary file.
+	\item  {Database State Management:} Establishing a connection to PostgreSQL and executing automatic migrations using \texttt{golang-migrate}. This guarantees data schema consistency, including the \texttt{PostGIS} and \texttt{pgRouting} extensions.
+	\item  {Caching and Queue Initialization:} Creating clients for \texttt{Redis} and \texttt{Asynq}, which are required for handling background tasks and transient data.
+	\item  {Dependency Injection (DI):} Implementing the IoC (Inversion of Control) pattern. All objects (repositories, services, handlers) receive their dependencies explicitly through constructors. This approach eliminates hidden dependencies within components and facilitates unit testing.
+	\item  {Transport Layer Startup:} Initializing HTTP server routes, the WebSocket hub, and activating background workers.
 \end{enumerate}
 
 \subsection{Transport Layer and Request Processing}
@@ -177,15 +227,15 @@ The \texttt{Gin} framework was selected as the primary HTTP framework, character
 	\item Invoking business logic through the service layer and returning a structured response.
 \end{itemize}
 
-To ensure interactivity and real-time event processing (e.g., during map editing or receiving notifications), a \textbf{WebSocket Hub} subsystem has been implemented. It manages active connections and broadcasts updates between clients, minimizing latency compared to conventional HTTP requests.
+To ensure interactivity and real-time event processing (e.g., during map editing or receiving notifications), a  {WebSocket Hub} subsystem has been implemented. It manages active connections and broadcasts updates between clients, minimizing latency compared to conventional HTTP requests.
 
 \subsection{Abstraction Layers: Services and Repositories}
 The application architecture is divided into logical levels to isolate business rules from infrastructure implementation details:
 
 \begin{enumerate}
-	\item \textbf{Service Layer:} Encapsulates the core business logic of the project. Services operate through repository interfaces and external clients (\texttt{Redis}, \texttt{MinIO}), remaining independent of the specific storage implementation. This layer also handles interaction with \textbf{pgRouting} to calculate optimal paths based on the provided coordinates.
-	\item \textbf{Data Access Layer (DAL):} Implemented via the "Repository" pattern. Repositories hide the details of SQL queries and the specifics of the \texttt{GORM} ORM.
-	\item \textbf{Interface Abstraction:} The use of interfaces allows for easy replacement of real database connections with \textit{mock} objects during testing, which is critical for ensuring code stability.
+	\item  {Service Layer:} Encapsulates the core business logic of the project. Services operate through repository interfaces and external clients (\texttt{Redis}, \texttt{MinIO}), remaining independent of the specific storage implementation. This layer also handles interaction with  {pgRouting} to calculate optimal paths based on the provided coordinates.
+	\item  {Data Access Layer (DAL):} Implemented via the "Repository" pattern. Repositories hide the details of SQL queries and the specifics of the \texttt{GORM} ORM.
+	\item  {Interface Abstraction:} The use of interfaces allows for easy replacement of real database connections with \textit{mock} objects during testing, which is critical for ensuring code stability.
 \end{enumerate}
 
 \subsection{Background Tasks and Asynchronous Processing}
@@ -195,27 +245,27 @@ The \texttt{Asynq} library is used to perform resource-intensive operations, suc
 A modern Continuous Integration and Continuous Delivery (CI/CD) cycle centered on the "Shift Left Security" concept has been implemented within the project. The primary objective of this approach is to identify defects and vulnerabilities at the earliest possible stages of development.
 
 \subsection{Continuous Integration (CI) Pipeline and Quality Assurance}
-The code build and verification process will be automated using the \textbf{Jenkins} automation server. The lifecycle of changes in the codebase is strictly regulated and includes the following stages:
+The code build and verification process will be automated using the  {Jenkins} automation server. The lifecycle of changes in the codebase is strictly regulated and includes the following stages:
 
 \begin{enumerate}
-	\item \textbf{Automated Testing:} Every \textit{PR} (Pull Request) triggers a suite of unit and integration tests. Passing all tests is a mandatory prerequisite for further code analysis.
-	\item \textbf{Static Analysis and Quality Gates:} The source code undergoes deep scanning in the \textbf{SonarQube} system. The check includes searching for potential vulnerabilities, assessing technical debt, and analyzing code coverage. Branch merging is permitted only upon successfully passing the established \textit{Quality Gates}.
-	\item \textbf{Mandatory Code Review:} The branching policy prohibits direct pushes to the \texttt{main} branch. Any change requires review and formal approval from at least one other member of the development team.
+	\item  {Automated Testing:} Every \textit{PR} (Pull Request) triggers a suite of unit and integration tests. Passing all tests is a mandatory prerequisite for further code analysis.
+	\item  {Static Analysis and Quality Gates:} The source code undergoes deep scanning in the  {SonarQube} system. The check includes searching for potential vulnerabilities, assessing technical debt, and analyzing code coverage. Branch merging is permitted only upon successfully passing the established \textit{Quality Gates}.
+	\item  {Mandatory Code Review:} The branching policy prohibits direct pushes to the \texttt{main} branch. Any change requires review and formal approval from at least one other member of the development team.
 \end{enumerate}
 
 \subsection{Containerization and Runtime Security}
 To minimize attack vectors during the software product's operational phase, containerization technology utilizing specialized images will be employed.
 
 \begin{itemize}
-	\item \textbf{Distroless Containers:} Unlike standard base images (e.g., those based on Debian or Alpine), \textit{distroless} images contain exclusively the application and its runtime dependencies. They lack package managers, shells, and standard OS utilities. This significantly reduces the "attack surface" and eliminates the possibility of an attacker executing arbitrary scripts within the container.
-	\item \textbf{Multi-stage Builds:} The Go application is compiled in an intermediate container, after which the resulting binary is copied into a minimalist final image.
+	\item  {Distroless Containers:} Unlike standard base images (e.g., those based on Debian or Alpine), \textit{distroless} images contain exclusively the application and its runtime dependencies. They lack package managers, shells, and standard OS utilities. This significantly reduces the "attack surface" and eliminates the possibility of an attacker executing arbitrary scripts within the container.
+	\item  {Multi-stage Builds:} The Go application is compiled in an intermediate container, after which the resulting binary is copied into a minimalist final image.
 \end{itemize}
 
 \subsection{Monitoring and Network Perimeter Protection}
 The infrastructure layer is supplemented with proactive defense tools:
 \begin{itemize}
-	\item \textbf{Middleware Filtering:} Implementation of an intermediary request-processing layer to validate incoming data and prevent common attacks (SQL injections, XSS).
-	\item \textbf{Anubis:} Utilizing the Anubis system in conjunction with NGINX allows for effective blocking of automated malicious traffic and botnets, maintaining VM resource availability for legitimate users.
+	\item  {Middleware Filtering:} Implementation of an intermediary request-processing layer to validate incoming data and prevent common attacks (SQL injections, XSS).
+	\item  {Anubis:} Utilizing the Anubis system in conjunction with NGINX allows for effective blocking of automated malicious traffic and botnets, maintaining VM resource availability for legitimate users.
 \end{itemize}
 
 This suite of measures ensures that only verified, tested, and secured code that meets established security standards reaches the runtime environment.
@@ -226,10 +276,10 @@ In the course of this work, the architecture of a multifunctional university nav
 
 The key achievements of the project include:
 \begin{itemize}
-	\item \textbf{Technological Modernization:} The transition to the Go language and a microservice-oriented approach ensured high system performance even under constrained server resources.
-	\item \textbf{Navigation Innovation:} The implementation of 360-degree panoramas in conjunction with the \texttt{pgRouting} mathematical framework and graph-based models allowed for the creation of an intuitive and accurate indoor routing tool.
-	\item \textbf{Security and Reliability:} Applying the "Shift Left Security" concept, utilizing \textit{distroless} containers, and maintaining a rigorous CI/CD pipeline guarantee the protection of user data and system resilience against external threats.
-	\item \textbf{Scalability:} The selected technology stack and the \textit{stateless} backend architecture allow for seamless project scaling as load increases or functionality expands.
+	\item  {Technological Modernization:} The transition to the Go language and a microservice-oriented approach ensured high system performance even under constrained server resources.
+	\item  {Navigation Innovation:} The implementation of 360-degree panoramas in conjunction with the \texttt{pgRouting} mathematical framework and graph-based models allowed for the creation of an intuitive and accurate indoor routing tool.
+	\item  {Security and Reliability:} Applying the "Shift Left Security" concept, utilizing \textit{distroless} containers, and maintaining a rigorous CI/CD pipeline guarantee the protection of user data and system resilience against external threats.
+	\item  {Scalability:} The selected technology stack and the \textit{stateless} backend architecture allow for seamless project scaling as load increases or functionality expands.
 \end{itemize}
 
 Once the software product is developed, it will comply with modern development standards. Upon deployment within the university infrastructure, it will provide a significant improvement in the quality of interaction between students, faculty, and the university's digital environment.
