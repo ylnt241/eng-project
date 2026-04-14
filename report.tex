@@ -60,7 +60,9 @@
 \usepackage{enumitem}
 \setlist{nosep, leftmargin=\parindent}
 \usepackage[unicode, hidelinks]{hyperref}
-
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian, english]{babel}
 % ========== DOCUMENT START ==========
 \begin{document}
 
@@ -103,29 +105,57 @@
 \tableofcontents
 \chapter{Introduction}
 \section{Thesis Rationale}
-The thesis aims to design architecture for a replacement of existing navigation service \href{https://map.csu.ru}{map.csu.ru}. The primary driver for the thesis is the need to implement modern 360-degree panoramic imaging technologies to enhance the visualization of the university environment. During the conceptual discussion, it was decided to discontinue support for the current codebase in favor of developing a fundamentally new application. This decision is based on the following factors:
+The thesis aims to design backend architecture for a replacement of existing navigation service \href{https://map.csu.ru}{map.csu.ru}. The primary driver for the thesis is the need to implement modern 360-degree panoramic imaging technologies to enhance the visualization of the university environment. During the conceptual discussion, it was decided to discontinue support for the current codebase in favor of designing and developing a fundamentally new application. This decision is based on the following factors:
 \begin{enumerate}
 	\item low cost-effectiveness of maintaining the previous version due to accumulated technical debt and architectural complexity;
 	\item the necessity of implementing a modern technology stack to ensure scalability and performance.
 \end{enumerate}
 
-The thesis objective is to design a multifunctional ecosystem that addresses key university digitalization challenges and improves the Quality of Life (QoL) for students and staff. The project roadmap will include:
-\begin{itemize}
-	\item development of a web-based interactive map editor with 3D imagery support, event and schedule integration, and shortest-path routing algorithms;
-	\item integration of an ejabberd server and a web client to facilitate internal communication;
-	\item development of data import tools (parsers) or manual schedule entry interfaces.
-\end{itemize}
+The thesis objective is to design a backend of multifunctional ecosystem that addresses key university digitalization challenges and improves the Quality of Life (QoL) for students and staff. 
+
+\section{Object and subject}
+
+The subject of the thesis is the active team communication, the study of materials required for the development of the backend architecture, the analysis of existing technical solutions, and the collective decision-making process undertaken during the system design.
+
+The object of the thesis is the set of application and backend flowcharts, along with the description of their interaction.
 
 \chapter{Theoretical Framework}
 \section{Analysis of Current Challenges}
 The academic process is currently associated with several organizational complexities. These include the absence of a unified secure environment for real-time communication between students and faculty, the decentralization of university information resources, and the low efficiency of notification channels.
 
-The project under development designed to aggregate the necessary services into a single interface, thereby increasing the transparency and accessibility of the educational environment.
+The architecture of the project under development is designed to aggregate the necessary services within a single interface, thereby enhancing the transparency and accessibility of the educational environment.
+\section{Tasks}
 
+\subsection{Theoretical Tasks (Subject of the Research)}
+\begin{itemize}
+	\item facilitate active team communication to discuss the desired system functionalities;
+	\item conduct a collaborative analysis and discuss possible methods for implementing each functionality;
+	\item review the scientific and technical materials required for designing the backend architecture.
+\end{itemize}
+
+\subsection{Practical Tasks (Object of the Research)}
+\begin{itemize}
+	\item develop a high-level application flowchart illustrating the interaction among all modules;
+	\item create a detailed backend flowchart.
+\end{itemize}
+\section{Study of Technical Materials for Backend Architecture Design}
+
+As part of the theoretical subject of this thesis, a systematic study of technical materials was conducted to inform the creation of the application and backend flowcharts (the object of the research). The study covered four essential areas.
+
+First, the Go programming language was examined using official documentation~\cite{go.dev}, the MetaNIT tutorials~\cite{metanit.go, metanit.web}, and a Stepik course~\cite{stepik.go}. These sources provided foundational knowledge of Go's concurrency model, web programming capabilities, and microservices design patterns.
+
+Second, geospatial routing technologies were investigated, focusing on pgRouting~\cite{pgrouting.docs} and its integration with PostgreSQL, as well as practical implementations using OpenStreetMap data. Articles from Habr~\cite{habr.pgrouting} provided real-world insights into building routing systems.
+
+Third, supporting infrastructure components were reviewed, including Redis for caching and queuing, Asynq~\cite{asynq} for distributed task processing, and MinIO for object storage of panoramic images. Key Habr resources~\cite{habr.redis, habr.minio, habr.asynq} guided these decisions.
+
+Fourth, security practices were studied, specifically the "Shift Left Security" paradigm and its application to Go microservices.
+
+The synthesis of these materials directly shaped the architectural decisions documented in the application and backend flowcharts, thereby completing the theoretical subject of the thesis.
 \section{Core Development Principles}
 The key priorities in system design are security, performance, portability, and maintainability. These requirements dictated the choice of the technology stack. Several languages, including Python, JavaScript, and C\#, were excluded from consideration as they did not meet the performance criteria or the specific architectural requirements of the thesis.
 
 Furthermore, a significant objective for the project team is to gain hands-on experience with high-performance systems and to master industry-relevant skills.
+
 
 \section{Panoramic Content Visualization Methods}
 To achieve a full sense of presence and indoor navigation, 360-degree panoramic imaging technologies will be employed. The key task in the software processing of such content will be the transformation of spherical data into a flat image and its subsequent re-projection within the user interface.
@@ -249,17 +279,43 @@ To minimize attack vectors, containerization technology utilizing specialized im
 	\item {Multi-stage Builds:} The Go application will be compiled in an intermediate container to ensure a minimalist final image.
 \end{itemize}
 
-\chapter*{Conclusion}
-In the course of this thesis, the architecture of a multifunctional university navigation ecosystem was designed. The developed solution will not only replace outdated visualization tools but also establish a foundation for a unified digital space.
+\chapter{Conclusion}
 
-The key expected achievements of the thesis will include:
+In accordance with the research tasks defined in this thesis, the work was structured around two complementary dimensions: the subject and the object.
+
+Regarding the subject of the thesis, all theoretical tasks were successfully completed. Active team communication was facilitated to discuss the desired system functionalities. Collaborative analysis was conducted to evaluate possible implementation methods for each function. Furthermore, the necessary scientific and technical materials required for designing the backend architecture were thoroughly studied.
+
+Regarding the object of the thesis, the practical tasks were fulfilled as follows. A high-level application flowchart illustrating the interaction among all modules was developed. In addition, a detailed backend flowchart, including data flow descriptions and request processing logic, was created. These flowcharts collectively document the proposed architecture of a multifunctional university navigation ecosystem.
+
+The key expected outcomes of the thesis, as reflected in its object, include:
 \begin{itemize}
-	\item {Technological Modernization:} The transition to the Go language and a modular approach will ensure high performance.
-	\item {Navigation Innovation:} The implementation of 360-degree panoramas and the \texttt{pgRouting} framework will allow for the creation of an accurate indoor routing tool.
-	\item {Security and Reliability:} Applying the "Shift Left Security" concept and \textit{distroless} containers will guarantee the protection of user data.
-	\item {Scalability:} The selected technology stack will allow for seamless project scaling as the load increases.
+	\item \textbf{Architectural Modernisation:} The designed modular structure, formalised in the flowcharts, provides a foundation for replacing outdated visualisation tools and establishing a unified digital space.
+	\item \textbf{Navigation Innovation:} The detailed backend flowchart incorporates provisions for accurate indoor routing (e.g., via integration with frameworks such as pgRouting), while the application flowchart includes support for 360-degree panoramas as a visual aid.
+	\item \textbf{Security and Reliability:} The architectural design follows the principles of the "Shift Left Security" concept, and the documented component separation enables the use of minimal (e.g., distroless) containers for deployment.
+	\item \textbf{Scalability:} The technology stack indicated in the technical specification (derived from the object of this thesis) allows for seamless project scaling as load increases.
 \end{itemize}
 
-Once the project is developed, it will comply with modern standards and provide a significant improvement in the quality of interaction within the university's digital environment.
+Once implemented based on the designed flowcharts, the system will comply with modern standards and provide a significant improvement in the quality of interaction within the university's digital environment. Thus, the theoretical subject (team processes and study) enabled the creation of the practical object (application and backend flowcharts), which in turn fully addresses the initial challenges.
+\begin{thebibliography}{9}
+\bibitem{go.dev} Go Authors. (n.d.). \textit{Go Documentation}. \url{https://go.dev/doc/}
 
+\bibitem{metanit.go} MetaNit. (n.d.). \textit{Руководство по языку Go}. \url{https://metanit.com/go/tutorial/}
+
+\bibitem{metanit.web} MetaNit. (n.d.). \textit{Руководство по веб-программированию языку Go}. \url{https://metanit.com/go/web/}
+
+\bibitem{stepik.go} Stepik. (n.d.). \textit{Course: Development of Web Services in Golang}. \url{https://stepik.org/course/187490/promo}
+
+\bibitem{pgrouting.docs} pgRouting Contributors. (n.d.). \textit{pgRouting Documentation (latest)}. \url{https://docs.pgrouting.org/latest/en/index.html}
+
+\bibitem{habr.pgrouting} Habr. (2019). \textit{Делаем маршрутизацию (роутинг) на OpenStreetMap. Введение}. \url{https://habr.com/ru/articles/511144/}
+
+\bibitem{habr.redis} ManyChat. (2020). \textit{Redis на практических примерах}. \url{https://habr.com/ru/companies/manychat/articles/507136/}
+
+\bibitem{habr.minio} OzonTech. (2021). \textit{Зачем и как хранить объекты на примере MinIO}. \url{https://habr.com/ru/companies/ozontech/articles/586024/}
+
+\bibitem{asynq} Hibiken. (n.d.). \textit{Asynq}. \url{https://github.com/hibiken/asynq}
+
+\bibitem{habr.asynq} Wunderfund. (2021). \textit{Разбираемся с Redis}. \url{https://habr.com/ru/companies/wunderfund/articles/685894/}
+
+\end{thebibliography}
 \end{document}
